@@ -4,13 +4,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
- 
 }
 
 enum Role {
   ADMIN
   EDITOR
   VIEWER
+}
+
+enum ProjectStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+  CANCELLED
 }
 
 model User {
@@ -21,5 +27,26 @@ model User {
   role      Role     @default(VIEWER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  createdProjects  Project[] @relation("CreatedProjects")
+  assignedProjects Project[] @relation("AssignedProjects")
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  name             String
+  location         String
+  budget           Float
+  deadline         DateTime
+  description      String?
+  status           ProjectStatus @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  createdById      String
+  createdBy        User          @relation("CreatedProjects", fields: [createdById], references: [id])
+
+  assignedEditorId String?
+  assignedEditor   User?         @relation("AssignedProjects", fields: [assignedEditorId], references: [id])
 }
 

@@ -1,137 +1,272 @@
 "use client";
 
 import { useAuth } from "@/lib/context/AuthContext";
+import DashboardLayout from "@/components/DashboardLayout";
+import StatsCard from "@/components/StatsCard";
+import { BarChart, DonutChart, StatusBarChart } from "@/components/Charts";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  FolderKanban,
+  Users,
+  FileText,
+  DollarSign,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Plus,
+  Eye,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  const role = user?.role || "VIEWER";
+
+  // Mock data — will be replaced with API data
+  const stats = {
+    totalProjects: 3,
+    activePaps: 24,
+    completedPayments: 8,
+    pendingReviews: 5,
+    totalComplaints: 4,
+    resolvedComplaints: 2,
+    totalBudget: 450_000_000,
+    paidAmount: 120_000_000,
+  };
+
+  const projectStatusData = [
+    { label: "Active", value: 2, color: "#1E3A8A" },
+    { label: "Pending", value: 1, color: "#EAB308" },
+    { label: "Completed", value: 0, color: "#16A34A" },
+    { label: "Cancelled", value: 0, color: "#6B7280" },
+  ];
+
+  const papStatusData = [
+    { label: "Not Yet Paid", value: 10, color: "#DC2626" },
+    { label: "Council Review", value: 5, color: "#EAB308" },
+    { label: "Finance Processing", value: 4, color: "#F97316" },
+    { label: "Paid", value: 8, color: "#16A34A" },
+    { label: "Draft", value: 2, color: "#3B82F6" },
+  ];
+
+  const complaintData = [
+    { label: "Resolved", value: 2, color: "#16A34A" },
+    { label: "Under Review", value: 1, color: "#EAB308" },
+    { label: "Submitted", value: 1, color: "#F97316" },
+  ];
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-RW", {
+      style: "currency",
+      currency: "RWF",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      {/* Header */}
-      <header className="bg-[#1E3A8A] text-white">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/20 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold">MEIS</h1>
-              <p className="text-xs text-blue-200">Management System</p>
-            </div>
+    <DashboardLayout>
+      {/* Page Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-[#0F172A]">
+              Welcome, {user?.name?.split(" ")[0] || "User"}
+            </h1>
+            <p className="text-[#64748B] mt-1">
+              You are logged in as{" "}
+              <Badge variant={role === "ADMIN" ? "info" : role === "EDITOR" ? "warning" : "default"} className="ml-1">
+                {role.toLowerCase()}
+              </Badge>
+            </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium">{user?.name}</p>
-              <p className="text-xs text-blue-200 capitalize">{user?.role?.toLowerCase()}</p>
-            </div>
-            <button
-              onClick={logout}
-              className="px-3 py-1.5 text-sm bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-            >
-              Sign Out
-            </button>
+          <div className="hidden sm:flex items-center gap-2 text-sm text-[#64748B]">
+            <Clock className="w-4 h-4" />
+            <span>Last updated: Today</span>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Welcome */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#0F172A]">
-            Welcome, {user?.name}
-          </h2>
-          <p className="text-[#64748B] mt-1">
-            You are logged in as an <strong className="text-[#1E3A8A] capitalize">{user?.role?.toLowerCase()}</strong>
-          </p>
-        </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+        <StatsCard
+          title="Total Projects"
+          value={stats.totalProjects}
+          icon={<FolderKanban className="w-full h-full" />}
+          iconBg="bg-[#DBEAFE]"
+          iconColor="text-[#1E3A8A]"
+          description="Active expropriation projects"
+        />
+        <StatsCard
+          title="Active PAPs"
+          value={stats.activePaps}
+          icon={<Users className="w-full h-full" />}
+          iconBg="bg-[#CCFBF1]"
+          iconColor="text-[#0F766E]"
+          description="Registered affected persons"
+        />
+        <StatsCard
+          title="Completed Payments"
+          value={stats.completedPayments}
+          icon={<DollarSign className="w-full h-full" />}
+          iconBg="bg-[#DCFCE7]"
+          iconColor="text-[#16A34A]"
+          description={`${formatCurrency(stats.paidAmount)} disbursed`}
+        />
+        <StatsCard
+          title="Pending Reviews"
+          value={stats.pendingReviews}
+          icon={<FileText className="w-full h-full" />}
+          iconBg="bg-[#FEF9C3]"
+          iconColor="text-[#EAB308]"
+          description="Awaiting council review"
+        />
+      </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-[0_4px_8px_rgba(15,23,42,0.08)] p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-[#DBEAFE] rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-[#1E3A8A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-[#0F172A]">0</p>
-                <p className="text-sm text-[#64748B]">Total Projects</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-[0_4px_8px_rgba(15,23,42,0.08)] p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-[#CCFBF1] rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-[#0F766E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-[#0F172A]">0</p>
-                <p className="text-sm text-[#64748B]">Active PAPs</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-[0_4px_8px_rgba(15,23,42,0.08)] p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-[#FEF9C3] rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-[#EAB308]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-[#0F172A]">0</p>
-                <p className="text-sm text-[#64748B]">Pending Reviews</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <BarChart
+          title="Project Status Overview"
+          data={projectStatusData}
+        />
+        <DonutChart
+          title="PAP Compensation Status"
+          data={papStatusData}
+        />
+      </div>
 
+      {/* Second Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <StatusBarChart
+          title="Payment Progress"
+          data={[
+            { label: "Paid", value: 8, color: "#16A34A", bgColor: "#DCFCE7" },
+            { label: "Pending", value: 10, color: "#DC2626", bgColor: "#FEE2E2" },
+            { label: "Processing", value: 4, color: "#F97316", bgColor: "#FFEDD5" },
+            { label: "Council Review", value: 5, color: "#EAB308", bgColor: "#FEF9C3" },
+          ]}
+        />
+        <DonutChart
+          title="Complaint Status"
+          data={complaintData}
+        />
+      </div>
+
+      {/* Quick Actions + Budget Summary */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-[0_4px_8px_rgba(15,23,42,0.08)] p-6">
-          <h3 className="text-lg font-semibold text-[#0F172A] mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left">
-              <div className="w-9 h-9 bg-[#DBEAFE] rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#1E3A8A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-              </div>
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {(role === "ADMIN" || role === "EDITOR") && (
+                <Link
+                  href="/projects"
+                  className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left group"
+                >
+                  <div className="w-9 h-9 bg-[#DBEAFE] rounded-lg flex items-center justify-center group-hover:bg-[#BFDBFE] transition-colors">
+                    <Plus className="w-4 h-4 text-[#1E3A8A]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#0F172A]">New Project</p>
+                    <p className="text-xs text-[#64748B]">Create a new project</p>
+                  </div>
+                </Link>
+              )}
+              {role === "EDITOR" && (
+                <Link
+                  href="/projects"
+                  className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left group"
+                >
+                  <div className="w-9 h-9 bg-[#CCFBF1] rounded-lg flex items-center justify-center group-hover:bg-[#A7F3D0] transition-colors">
+                    <Users className="w-4 h-4 text-[#0F766E]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#0F172A]">Register PAP</p>
+                    <p className="text-xs text-[#64748B]">Add affected persons</p>
+                  </div>
+                </Link>
+              )}
+              <Link
+                href="/projects"
+                className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left group"
+              >
+                <div className="w-9 h-9 bg-[#FFEDD5] rounded-lg flex items-center justify-center group-hover:bg-[#FED7AA] transition-colors">
+                  <Eye className="w-4 h-4 text-[#F97316]" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-[#0F172A]">View Projects</p>
+                  <p className="text-xs text-[#64748B]">Browse all projects</p>
+                </div>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Budget Summary */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Budget Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
               <div>
-                <p className="text-sm font-medium text-[#0F172A]">New Project</p>
-                <p className="text-xs text-[#64748B]">Create a new expropriation project</p>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-[#64748B]">Total Budget</span>
+                  <span className="text-sm font-semibold text-[#0F172A]">
+                    {formatCurrency(stats.totalBudget)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-sm text-[#64748B]">Disbursed</span>
+                  <span className="text-sm font-semibold text-[#16A34A]">
+                    {formatCurrency(stats.paidAmount)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-[#64748B]">Remaining</span>
+                  <span className="text-sm font-semibold text-[#1E3A8A]">
+                    {formatCurrency(stats.totalBudget - stats.paidAmount)}
+                  </span>
+                </div>
               </div>
-            </button>
-            <button className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left">
-              <div className="w-9 h-9 bg-[#CCFBF1] rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#0F766E]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-              </div>
+
+              {/* Progress bar */}
               <div>
-                <p className="text-sm font-medium text-[#0F172A]">Register PAP</p>
-                <p className="text-xs text-[#64748B]">Register a Project Affected Person</p>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs text-[#64748B]">Disbursement Progress</span>
+                  <span className="text-xs font-medium text-[#0F172A]">
+                    {Math.round((stats.paidAmount / stats.totalBudget) * 100)}%
+                  </span>
+                </div>
+                <div className="w-full h-2.5 bg-[#F1F5F9] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-[#16A34A] rounded-full transition-all duration-500"
+                    style={{
+                      width: `${Math.min((stats.paidAmount / stats.totalBudget) * 100, 100)}%`,
+                    }}
+                  />
+                </div>
               </div>
-            </button>
-            <button className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left">
-              <div className="w-9 h-9 bg-[#FFEDD5] rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#F97316]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m0 0v-.375c0-.621-.504-1.125-1.125-1.125H3.75" />
-                </svg>
+
+              <div className="pt-2 border-t border-[#E2E8F0]">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-[#EAB308] mt-0.5 shrink-0" />
+                  <p className="text-xs text-[#64748B]">
+                    {stats.pendingReviews > 0
+                      ? `${stats.pendingReviews} PAPs are pending council review before payment can proceed.`
+                      : "All PAPs have been processed for payment."}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-[#0F172A]">View Reports</p>
-                <p className="text-xs text-[#64748B]">Access project reports and analytics</p>
-              </div>
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </DashboardLayout>
   );
 }
 
