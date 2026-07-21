@@ -32,6 +32,12 @@ const navigationItems = [
     roles: ["ADMIN", "EDITOR", "VIEWER"],
   },
   {
+    label: "PAPs",
+    href: "/paps",
+    icon: Users,
+    roles: ["ADMIN", "EDITOR", "VIEWER"],
+  },
+  {
     label: "Users",
     href: "/users",
     icon: Users,

@@ -274,6 +274,40 @@ export function validateUpdatePapInput(input: UpdatePapInput): Record<string, st
 }
 
 
+// --- Valuation Validations ---
+
+export interface UpdateValuationInput {
+  compensationAmount?: number;
+  valuationDate?: string;
+  valuationComment?: string;
+  compensationStatus?: CompensationStatus;
+}
+
+export function validateValuationInput(input: UpdateValuationInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (input.compensationAmount !== undefined && input.compensationAmount < 0) {
+    errors.compensationAmount = "Compensation amount cannot be negative";
+  }
+
+  if (input.valuationDate !== undefined) {
+    const date = new Date(input.valuationDate);
+    if (isNaN(date.getTime())) {
+      errors.valuationDate = "Invalid valuation date";
+    }
+  }
+
+  if (input.valuationComment !== undefined && input.valuationComment.length > 500) {
+    errors.valuationComment = "Comment must be 500 characters or less";
+  }
+
+  if (input.compensationStatus !== undefined && !VALID_COMPENSATION_STATUSES.includes(input.compensationStatus)) {
+    errors.compensationStatus = "Invalid compensation status";
+  }
+
+  return errors;
+}
+
 export function validateCreateProjectInput(input: CreateProjectInput): Record<string, string> {
   const errors: Record<string, string> = {};
 
