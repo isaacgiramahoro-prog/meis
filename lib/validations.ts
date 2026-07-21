@@ -308,6 +308,54 @@ export function validateValuationInput(input: UpdateValuationInput): Record<stri
   return errors;
 }
 
+// --- Council Review Validations ---
+
+export type CouncilDecision = "PENDING" | "APPROVED" | "REVISION_NEEDED";
+
+export interface RecordCouncilReviewInput {
+  papId: string;
+  reviewerName: string;
+  reviewDate?: string;
+  decision: CouncilDecision;
+  feedback?: string;
+  approvedAmount?: number;
+}
+
+const VALID_COUNCIL_DECISIONS: CouncilDecision[] = ["PENDING", "APPROVED", "REVISION_NEEDED"];
+
+export function validateCouncilReviewInput(input: RecordCouncilReviewInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!input.papId) {
+    errors.papId = "PAP is required";
+  }
+
+  if (!input.reviewerName || input.reviewerName.trim().length < 2) {
+    errors.reviewerName = "Reviewer name must be at least 2 characters";
+  }
+
+  if (!input.decision || !VALID_COUNCIL_DECISIONS.includes(input.decision)) {
+    errors.decision = "Please select a valid council decision";
+  }
+
+  if (input.approvedAmount !== undefined && input.approvedAmount < 0) {
+    errors.approvedAmount = "Approved amount cannot be negative";
+  }
+
+  if (input.feedback !== undefined && input.feedback.length > 1000) {
+    errors.feedback = "Feedback must be 1000 characters or less";
+  }
+
+  if (input.reviewDate !== undefined) {
+    const date = new Date(input.reviewDate);
+    if (isNaN(date.getTime())) {
+      errors.reviewDate = "Invalid review date";
+    }
+  }
+
+  return errors;
+}
+
 export function validateCreateProjectInput(input: CreateProjectInput): Record<string, string> {
   const errors: Record<string, string> = {};
 

@@ -11,6 +11,7 @@ import {
   Users,
   FileText,
   BarChart3,
+  Scale,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -36,6 +37,12 @@ const navigationItems = [
     href: "/paps",
     icon: Users,
     roles: ["ADMIN", "EDITOR", "VIEWER"],
+  },
+  {
+    label: "Council",
+    href: "/council",
+    icon: Scale,
+    roles: ["ADMIN", "EDITOR"],
   },
   {
     label: "Users",

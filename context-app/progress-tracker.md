@@ -6,13 +6,13 @@ Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-- Phase 4 — PAP Management & Valuation Module — **Complete**
+- Phase 5 — Council Review & Approval Tracking — **Complete**
 
 ---
 
 ## Current Goal
 
-- Implement Valuation module: compensation values, valuation status, valuation updates.
+- Implement Council Review module: council review tracking, signature approval tracking, council decision recording.
 
 ---
 
@@ -60,6 +60,22 @@ Update this file after every meaningful implementation change.
 - ✅ Added navigation link for PAPs in the Sidebar (all roles).
 - ✅ Added valuation-specific validation interfaces (UpdateValuationInput, validateValuationInput).
 - ✅ Verified TypeScript build compiles without errors.
+- ✅ Added CouncilDecision enum and CouncilReview model to Prisma schema.
+
+### Phase 5 — Council Review & Approval Tracking — ✅ Complete
+
+- ✅ Added CouncilDecision enum (PENDING, APPROVED, REVISION_NEEDED) to Prisma schema.
+- ✅ Added CouncilReview model with relations to Pap and User.
+- ✅ Created GET/POST /api/council route (list PAPs in council review & record decisions).
+- ✅ Created GET/PATCH /api/council/[id] route (council review detail & update).
+- ✅ Added council review validation interfaces and functions to lib/validations.ts.
+- ✅ Created RecordCouncilModal component for recording council decisions.
+- ✅ Created Council Review list page with stats cards (In Review, Approved, Revision Needed, Pending).
+- ✅ Created Council Review detail page with PAP info and review history.
+- ✅ Added Council navigation link in Sidebar (Admin + Editor).
+- ✅ Council decision recording automatically updates PAP compensation status.
+- ✅ Approved reviews move PAP to FINANCE_PROCESSING status.
+- ✅ Verified Prisma generate and db push succeed.
 
 ---
 
