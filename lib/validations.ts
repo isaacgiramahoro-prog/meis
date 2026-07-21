@@ -77,6 +77,203 @@ export interface UpdateProjectInput {
   status?: "PENDING" | "ACTIVE" | "COMPLETED" | "CANCELLED";
 }
 
+// --- PAP Validations ---
+
+export type PropertyType = "RESIDENTIAL" | "COMMERCIAL" | "AGRICULTURAL" | "INDUSTRIAL" | "OTHER";
+export type CompensationStatus = "DRAFT" | "NOT_YET_PAID" | "COUNCIL_REVIEW" | "FINANCE_PROCESSING" | "PAID" | "FAILED" | "CANCELLED";
+
+export interface CreatePapInput {
+  projectId: string;
+  ownerName: string;
+  ownerId: string;
+  ownerPhone?: string;
+  ownerEmail?: string;
+  civilStatus?: string;
+  beneficiaryName: string;
+  beneficiaryId: string;
+  beneficiaryPhone?: string;
+  beneficiaryEmail?: string;
+  relationship?: string;
+  affectedUpi: string;
+  affectedArea: number;
+  propertyType: PropertyType;
+  sector: string;
+  cell: string;
+  village: string;
+  landRegistration?: string;
+  landDescription?: string;
+  compensationAmount?: number;
+  valuationDate?: string;
+  valuationComment?: string;
+  bankName?: string;
+  accountNumber?: string;
+}
+
+export interface UpdatePapInput {
+  ownerName?: string;
+  ownerId?: string;
+  ownerPhone?: string;
+  ownerEmail?: string;
+  civilStatus?: string;
+  beneficiaryName?: string;
+  beneficiaryId?: string;
+  beneficiaryPhone?: string;
+  beneficiaryEmail?: string;
+  relationship?: string;
+  affectedUpi?: string;
+  affectedArea?: number;
+  propertyType?: PropertyType;
+  sector?: string;
+  cell?: string;
+  village?: string;
+  landRegistration?: string;
+  landDescription?: string;
+  compensationStatus?: CompensationStatus;
+  compensationAmount?: number;
+  valuationDate?: string;
+  valuationComment?: string;
+  ownerSigned?: boolean;
+  ownerSignedDate?: string;
+  cellSigned?: boolean;
+  cellSignedDate?: string;
+  sectorSigned?: boolean;
+  sectorSignedDate?: string;
+  landVerified?: boolean;
+  landVerifiedBy?: string;
+  landVerifiedDate?: string;
+  landTitleVerified?: boolean;
+  landTitleVerifiedBy?: string;
+  landTitleVerifiedDate?: string;
+  idVerified?: boolean;
+  idVerifiedBy?: string;
+  idVerifiedDate?: string;
+  bankName?: string;
+  accountNumber?: string;
+  paymentCode?: string;
+  paidAmount?: number;
+  paidDate?: string;
+}
+
+const VALID_PROPERTY_TYPES: PropertyType[] = ["RESIDENTIAL", "COMMERCIAL", "AGRICULTURAL", "INDUSTRIAL", "OTHER"];
+const VALID_COMPENSATION_STATUSES: CompensationStatus[] = ["DRAFT", "NOT_YET_PAID", "COUNCIL_REVIEW", "FINANCE_PROCESSING", "PAID", "FAILED", "CANCELLED"];
+
+export function validateCreatePapInput(input: CreatePapInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!input.projectId) {
+    errors.projectId = "Project is required";
+  }
+
+  if (!input.ownerName || input.ownerName.trim().length < 2) {
+    errors.ownerName = "Owner name must be at least 2 characters";
+  }
+
+  if (!input.ownerId || input.ownerId.trim().length < 2) {
+    errors.ownerId = "Owner ID is required";
+  }
+
+  if (!input.beneficiaryName || input.beneficiaryName.trim().length < 2) {
+    errors.beneficiaryName = "Beneficiary name must be at least 2 characters";
+  }
+
+  if (!input.beneficiaryId || input.beneficiaryId.trim().length < 2) {
+    errors.beneficiaryId = "Beneficiary ID is required";
+  }
+
+  if (!input.affectedUpi || input.affectedUpi.trim().length < 2) {
+    errors.affectedUpi = "Affected UPI is required";
+  }
+
+  if (!input.affectedArea || input.affectedArea <= 0) {
+    errors.affectedArea = "Affected area must be greater than 0";
+  }
+
+  if (!input.propertyType || !VALID_PROPERTY_TYPES.includes(input.propertyType)) {
+    errors.propertyType = "Please select a valid property type";
+  }
+
+  if (!input.sector || input.sector.trim().length < 2) {
+    errors.sector = "Sector is required";
+  }
+
+  if (!input.cell || input.cell.trim().length < 2) {
+    errors.cell = "Cell is required";
+  }
+
+  if (!input.village || input.village.trim().length < 2) {
+    errors.village = "Village is required";
+  }
+
+  if (input.ownerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.ownerEmail)) {
+    errors.ownerEmail = "Please enter a valid email address";
+  }
+
+  if (input.beneficiaryEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.beneficiaryEmail)) {
+    errors.beneficiaryEmail = "Please enter a valid email address";
+  }
+
+  return errors;
+}
+
+export function validateUpdatePapInput(input: UpdatePapInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (input.ownerName !== undefined && input.ownerName.trim().length < 2) {
+    errors.ownerName = "Owner name must be at least 2 characters";
+  }
+
+  if (input.ownerId !== undefined && input.ownerId.trim().length < 2) {
+    errors.ownerId = "Owner ID is required";
+  }
+
+  if (input.beneficiaryName !== undefined && input.beneficiaryName.trim().length < 2) {
+    errors.beneficiaryName = "Beneficiary name must be at least 2 characters";
+  }
+
+  if (input.beneficiaryId !== undefined && input.beneficiaryId.trim().length < 2) {
+    errors.beneficiaryId = "Beneficiary ID is required";
+  }
+
+  if (input.affectedUpi !== undefined && input.affectedUpi.trim().length < 2) {
+    errors.affectedUpi = "Affected UPI is required";
+  }
+
+  if (input.affectedArea !== undefined && input.affectedArea <= 0) {
+    errors.affectedArea = "Affected area must be greater than 0";
+  }
+
+  if (input.propertyType !== undefined && !VALID_PROPERTY_TYPES.includes(input.propertyType)) {
+    errors.propertyType = "Please select a valid property type";
+  }
+
+  if (input.sector !== undefined && input.sector.trim().length < 2) {
+    errors.sector = "Sector is required";
+  }
+
+  if (input.cell !== undefined && input.cell.trim().length < 2) {
+    errors.cell = "Cell is required";
+  }
+
+  if (input.village !== undefined && input.village.trim().length < 2) {
+    errors.village = "Village is required";
+  }
+
+  if (input.compensationStatus !== undefined && !VALID_COMPENSATION_STATUSES.includes(input.compensationStatus)) {
+    errors.compensationStatus = "Invalid compensation status";
+  }
+
+  if (input.ownerEmail !== undefined && input.ownerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.ownerEmail)) {
+    errors.ownerEmail = "Please enter a valid email address";
+  }
+
+  if (input.beneficiaryEmail !== undefined && input.beneficiaryEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.beneficiaryEmail)) {
+    errors.beneficiaryEmail = "Please enter a valid email address";
+  }
+
+  return errors;
+}
+
+
 export function validateCreateProjectInput(input: CreateProjectInput): Record<string, string> {
   const errors: Record<string, string> = {};
 

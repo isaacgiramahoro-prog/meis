@@ -19,6 +19,24 @@ enum ProjectStatus {
   CANCELLED
 }
 
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+  AGRICULTURAL
+  INDUSTRIAL
+  OTHER
+}
+
+enum CompensationStatus {
+  DRAFT
+  NOT_YET_PAID
+  COUNCIL_REVIEW
+  FINANCE_PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -48,5 +66,73 @@ model Project {
 
   assignedEditorId String?
   assignedEditor   User?         @relation("AssignedProjects", fields: [assignedEditorId], references: [id])
+
+  paps Pap[]
+}
+
+model Pap {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  // Owner Information
+  ownerName          String
+  ownerId            String
+  ownerPhone         String?
+  ownerEmail         String?
+  civilStatus        String? // Single, Married, Divorced, Widowed
+
+  // Beneficiary Information
+  beneficiaryName    String
+  beneficiaryId      String
+  beneficiaryPhone   String?
+  beneficiaryEmail   String?
+  relationship       String? // Relationship to owner
+
+  // Land Information
+  affectedUpi        String   // Unique Parcel Identifier
+  affectedArea       Float    // Square meters
+  propertyType       PropertyType @default(RESIDENTIAL)
+  sector             String
+  cell               String
+  village            String
+  landRegistration   String?  // Land registration info
+  landDescription    String?
+
+  // Compensation & Status
+  compensationStatus CompensationStatus @default(DRAFT)
+  compensationAmount Float?   // Valuation amount
+  valuationDate      DateTime?
+  valuationComment   String?
+
+  // Approval Signatures
+  ownerSigned        Boolean  @default(false)
+  ownerSignedDate    DateTime?
+  cellSigned         Boolean  @default(false)
+  cellSignedDate     DateTime?
+  sectorSigned       Boolean  @default(false)
+  sectorSignedDate   DateTime?
+
+  // Verification tracking
+  landVerified       Boolean  @default(false)
+  landVerifiedBy     String?
+  landVerifiedDate   DateTime?
+  landTitleVerified  Boolean  @default(false)
+  landTitleVerifiedBy String?
+  landTitleVerifiedDate DateTime?
+  idVerified         Boolean  @default(false)
+  idVerifiedBy       String?
+  idVerifiedDate     DateTime?
+
+  // Payment Info (basic, full in payments module)
+  bankName           String?
+  accountNumber      String?
+  paymentCode        String?
+  paidAmount         Float?
+  paidDate           DateTime?
 }
 
