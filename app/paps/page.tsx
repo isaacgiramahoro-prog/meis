@@ -190,7 +190,7 @@ export default function PapsPage() {
             Manage and track all registered project affected persons
           </p>
         </div>
-        {role !== "VIEWER" && (
+        {role === "EDITOR" && (
           <button
             onClick={handleOpenCreate}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E3A8A] text-white text-sm font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors"
@@ -344,11 +344,11 @@ export default function PapsPage() {
               No PAPs registered yet
             </h3>
             <p className="text-sm text-[#64748B] max-w-sm mx-auto">
-              {role !== "VIEWER"
+            {role === "EDITOR"
                 ? "Register your first Project Affected Person to get started."
                 : "PAP records will appear here once they are registered."}
             </p>
-            {role !== "VIEWER" && (
+            {role === "EDITOR" && (
               <button
                 onClick={handleOpenCreate}
                 className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-[#1E3A8A] text-white text-sm font-semibold rounded-lg hover:bg-[#1D4ED8] transition-colors"

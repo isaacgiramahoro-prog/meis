@@ -87,10 +87,10 @@ export const GET = withAuth(async (request: NextRequest, user) => {
 // POST /api/paps — Create a new PAP (Admin or Editor only)
 export const POST = withAuth(async (request: NextRequest, user) => {
   try {
-    // Only Admin and Editor can create PAPs
-    if (user.role === "VIEWER") {
+    // Only Editor can create PAPs (Admin should not register PAPs directly)
+    if (user.role !== "EDITOR") {
       return NextResponse.json(
-        { success: false, message: "Viewers cannot create PAP records" },
+        { success: false, message: "Only assigned editors can create PAP records" },
         { status: 403 }
       );
     }
