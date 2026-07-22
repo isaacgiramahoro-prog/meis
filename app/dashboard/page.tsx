@@ -12,48 +12,139 @@ import {
   FileText,
   DollarSign,
   AlertTriangle,
-  CheckCircle2,
   Clock,
   Plus,
   Eye,
 } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+
+interface DashboardData {
+  stats: {
+    totalProjects: number;
+    activePaps: number;
+    completedPayments: number;
+    pendingReviews: number;
+    totalComplaints: number;
+    resolvedComplaints: number;
+    totalBudget: number;
+    paidAmount: number;
+  };
+  projectStatusData: { label: string; value: number; color: string }[];
+  papStatusData: { label: string; value: number; color: string }[];
+  paymentStatusData: { label: string; value: number; color: string; bgColor: string }[];
+  complaintStatusData: { label: string; value: number; color: string }[];
+}
+
+function LoadingSkeleton() {
+  return (
+    <DashboardLayout>
+      <div className="mb-8">
+        <div className="h-8 w-64 bg-[#E2E8F0] rounded-lg animate-pulse mb-2" />
+        <div className="h-5 w-48 bg-[#E2E8F0] rounded animate-pulse" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-6">
+              <div className="h-full">
+                <div className="h-4 w-24 bg-[#E2E8F0] rounded animate-pulse mb-3" />
+                <div className="h-8 w-16 bg-[#E2E8F0] rounded animate-pulse mb-2" />
+                <div className="h-3 w-32 bg-[#E2E8F0] rounded animate-pulse" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {[...Array(2)].map((_, i) => (
+          <Card key={i}>
+            <CardHeader>
+              <div className="h-5 w-40 bg-[#E2E8F0] rounded animate-pulse" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-[200px] bg-[#E2E8F0] rounded-lg animate-pulse" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </DashboardLayout>
+  );
+}
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const role = user?.role || "VIEWER";
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data — will be replaced with API data
-  const stats = {
-    totalProjects: 3,
-    activePaps: 24,
-    completedPayments: 8,
-    pendingReviews: 5,
-    totalComplaints: 4,
-    resolvedComplaints: 2,
-    totalBudget: 450_000_000,
-    paidAmount: 120_000_000,
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/dashboard", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+          throw new Error(json.message || "Failed to load dashboard data");
+        }
+        setData(json.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
+
+  if (loading) return <LoadingSkeleton />;
+
+  // Default data when error or no data
+  const stats = data?.stats ?? {
+    totalProjects: 0,
+    activePaps: 0,
+    completedPayments: 0,
+    pendingReviews: 0,
+    totalComplaints: 0,
+    resolvedComplaints: 0,
+    totalBudget: 0,
+    paidAmount: 0,
   };
 
-  const projectStatusData = [
-    { label: "Active", value: 2, color: "#1E3A8A" },
-    { label: "Pending", value: 1, color: "#EAB308" },
+  const projectStatusData = data?.projectStatusData ?? [
+    { label: "Active", value: 0, color: "#1E3A8A" },
+    { label: "Pending", value: 0, color: "#EAB308" },
     { label: "Completed", value: 0, color: "#16A34A" },
     { label: "Cancelled", value: 0, color: "#6B7280" },
   ];
 
-  const papStatusData = [
-    { label: "Not Yet Paid", value: 10, color: "#DC2626" },
-    { label: "Council Review", value: 5, color: "#EAB308" },
-    { label: "Finance Processing", value: 4, color: "#F97316" },
-    { label: "Paid", value: 8, color: "#16A34A" },
-    { label: "Draft", value: 2, color: "#3B82F6" },
+  const papStatusData = data?.papStatusData ?? [
+    { label: "Not Yet Paid", value: 0, color: "#DC2626" },
+    { label: "Council Review", value: 0, color: "#EAB308" },
+    { label: "Finance Processing", value: 0, color: "#F97316" },
+    { label: "Paid", value: 0, color: "#16A34A" },
+    { label: "Draft", value: 0, color: "#3B82F6" },
   ];
 
-  const complaintData = [
-    { label: "Resolved", value: 2, color: "#16A34A" },
-    { label: "Under Review", value: 1, color: "#EAB308" },
-    { label: "Submitted", value: 1, color: "#F97316" },
+  const paymentStatusData = data?.paymentStatusData ?? [
+    { label: "Paid", value: 0, color: "#16A34A", bgColor: "#DCFCE7" },
+    { label: "Pending", value: 0, color: "#DC2626", bgColor: "#FEE2E2" },
+    { label: "Failed", value: 0, color: "#DC2626", bgColor: "#FEE2E2" },
+    { label: "Cancelled", value: 0, color: "#6B7280", bgColor: "#F3F4F6" },
+  ];
+
+  const complaintData = data?.complaintStatusData ?? [
+    { label: "Resolved", value: 0, color: "#16A34A" },
+    { label: "Under Review", value: 0, color: "#EAB308" },
+    { label: "Submitted", value: 0, color: "#F97316" },
+    { label: "Rejected", value: 0, color: "#DC2626" },
   ];
 
   const formatCurrency = (amount: number) => {
@@ -140,12 +231,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <StatusBarChart
           title="Payment Progress"
-          data={[
-            { label: "Paid", value: 8, color: "#16A34A", bgColor: "#DCFCE7" },
-            { label: "Pending", value: 10, color: "#DC2626", bgColor: "#FEE2E2" },
-            { label: "Processing", value: 4, color: "#F97316", bgColor: "#FFEDD5" },
-            { label: "Council Review", value: 5, color: "#EAB308", bgColor: "#FEF9C3" },
-          ]}
+          data={paymentStatusData}
         />
         <DonutChart
           title="Complaint Status"
