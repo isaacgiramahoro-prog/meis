@@ -1,10 +1,10 @@
-# Dashboard Implementation Plan
+# Dashboard Card Fit Fix Plan
 
 ## Steps
-
-- [x] 1. Analyze codebase structure, schema, API patterns
-- [x] 2. Plan approved by user
-- [x] 3. Create `/app/api/dashboard/route.ts` — Dashboard statistics aggregation API
-- [x] 4. Update `/app/dashboard/page.tsx` — Replace mock data with real API data + loading/error states
-- [x] 5. Verify implementation (TypeScript compilation check — no errors)
+- [x] Read and understand StatsCard.tsx and dashboard page.tsx
+- [x] Confirm plan with user
+- [x] Edit `components/StatsCard.tsx`:
+  - [x] Add `flex-1 min-w-0` to text container to prevent overflow
+  - [x] Add `truncate` to title, value, and description elements
+- [x] Verify changes compile correctly
 

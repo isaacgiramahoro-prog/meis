@@ -29,34 +29,34 @@ export default function StatsCard({
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-[#64748B]">{title}</p>
-            <p className="text-3xl font-bold text-[#0F172A]">{value}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0 space-y-1">
+            <p className="text-xs font-medium text-[#64748B] truncate">{title}</p>
+            <p className="text-lg font-bold text-[#0F172A] break-words">{value}</p>
             {description && (
-              <p className="text-xs text-[#94A3B8]">{description}</p>
+              <p className="text-[11px] text-[#94A3B8] break-words leading-relaxed">{description}</p>
             )}
             {trend && (
               <div className="flex items-center gap-1">
                 <span
                   className={cn(
-                    "text-xs font-medium",
+                    "text-[11px] font-medium",
                     trend.positive ? "text-[#16A34A]" : "text-[#DC2626]"
                   )}
                 >
                   {trend.positive ? "↑" : "↓"} {trend.value}
                 </span>
-                <span className="text-xs text-[#94A3B8]">vs last month</span>
+                <span className="text-[11px] text-[#94A3B8]">vs last month</span>
               </div>
             )}
           </div>
           <div
             className={cn(
-              "w-11 h-11 rounded-xl flex items-center justify-center shrink-0",
+              "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
               iconBg
             )}
           >
-            <div className={cn("w-5 h-5", iconColor)}>{icon}</div>
+            <div className={cn("w-3.5 h-3.5", iconColor)}>{icon}</div>
           </div>
         </div>
       </CardContent>

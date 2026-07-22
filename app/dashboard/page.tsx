@@ -173,7 +173,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-sm text-[#64748B]">
-            <Clock className="w-4 h-4" />
+            <Clock className="w-3.5 h-3.5" />
             <span>Last updated: Today</span>
           </div>
         </div>
@@ -253,8 +253,8 @@ export default function DashboardPage() {
                   href="/projects"
                   className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left group"
                 >
-                  <div className="w-9 h-9 bg-[#DBEAFE] rounded-lg flex items-center justify-center group-hover:bg-[#BFDBFE] transition-colors">
-                    <Plus className="w-4 h-4 text-[#1E3A8A]" />
+                  <div className="w-8 h-8 bg-[#DBEAFE] rounded-lg flex items-center justify-center group-hover:bg-[#BFDBFE] transition-colors">
+                    <Plus className="w-3.5 h-3.5 text-[#1E3A8A]" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#0F172A]">New Project</p>
@@ -267,8 +267,8 @@ export default function DashboardPage() {
                   href="/projects"
                   className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left group"
                 >
-                  <div className="w-9 h-9 bg-[#CCFBF1] rounded-lg flex items-center justify-center group-hover:bg-[#A7F3D0] transition-colors">
-                    <Users className="w-4 h-4 text-[#0F766E]" />
+                  <div className="w-8 h-8 bg-[#CCFBF1] rounded-lg flex items-center justify-center group-hover:bg-[#A7F3D0] transition-colors">
+                    <Users className="w-3.5 h-3.5 text-[#0F766E]" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-[#0F172A]">Register PAP</p>
@@ -280,8 +280,8 @@ export default function DashboardPage() {
                 href="/projects"
                 className="flex items-center gap-3 p-3 border border-[#E2E8F0] rounded-lg hover:bg-[#F8FAFC] hover:border-[#CBD5E1] transition-all text-left group"
               >
-                <div className="w-9 h-9 bg-[#FFEDD5] rounded-lg flex items-center justify-center group-hover:bg-[#FED7AA] transition-colors">
-                  <Eye className="w-4 h-4 text-[#F97316]" />
+                <div className="w-8 h-8 bg-[#FFEDD5] rounded-lg flex items-center justify-center group-hover:bg-[#FED7AA] transition-colors">
+                  <Eye className="w-3.5 h-3.5 text-[#F97316]" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-[#0F172A]">View Projects</p>
