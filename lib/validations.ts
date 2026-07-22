@@ -356,6 +356,168 @@ export function validateCouncilReviewInput(input: RecordCouncilReviewInput): Rec
   return errors;
 }
 
+// --- Complaint Validations ---
+
+export type ComplaintStatus = "SUBMITTED" | "UNDER_REVIEW" | "RESOLVED" | "REJECTED";
+export type ComplaintCategory = "LAND_ISSUE" | "VALUATION_ISSUE" | "OWNERSHIP_ISSUE" | "PAYMENT_ISSUE" | "OTHER";
+
+export interface CreateComplaintInput {
+  papId: string;
+  projectId: string;
+  category: ComplaintCategory;
+  description: string;
+  parentComplaintId?: string;
+}
+
+export interface UpdateComplaintInput {
+  status?: ComplaintStatus;
+  resolution?: string;
+  resolvedById?: string;
+  resolvedAt?: string;
+}
+
+const VALID_COMPLAINT_STATUSES: ComplaintStatus[] = ["SUBMITTED", "UNDER_REVIEW", "RESOLVED", "REJECTED"];
+const VALID_COMPLAINT_CATEGORIES: ComplaintCategory[] = ["LAND_ISSUE", "VALUATION_ISSUE", "OWNERSHIP_ISSUE", "PAYMENT_ISSUE", "OTHER"];
+
+export function validateCreateComplaintInput(input: CreateComplaintInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!input.papId) {
+    errors.papId = "PAP is required";
+  }
+
+  if (!input.projectId) {
+    errors.projectId = "Project is required";
+  }
+
+  if (!input.category || !VALID_COMPLAINT_CATEGORIES.includes(input.category)) {
+    errors.category = "Please select a valid complaint category";
+  }
+
+  if (!input.description || input.description.trim().length < 10) {
+    errors.description = "Description must be at least 10 characters";
+  }
+
+  if (input.description && input.description.length > 2000) {
+    errors.description = "Description must be 2000 characters or less";
+  }
+
+  return errors;
+}
+
+export function validateUpdateComplaintInput(input: UpdateComplaintInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (input.status !== undefined && !VALID_COMPLAINT_STATUSES.includes(input.status)) {
+    errors.status = "Invalid complaint status";
+  }
+
+  if (input.resolution !== undefined && input.resolution.length > 2000) {
+    errors.resolution = "Resolution must be 2000 characters or less";
+  }
+
+  if (input.status === "RESOLVED" && (!input.resolution || input.resolution.trim().length < 10)) {
+    errors.resolution = "Resolution description is required when resolving a complaint (min 10 characters)";
+  }
+
+  if (input.status === "REJECTED" && (!input.resolution || input.resolution.trim().length < 10)) {
+    errors.resolution = "Rejection reason is required when rejecting a complaint (min 10 characters)";
+  }
+
+  return errors;
+}
+
+// --- Payment Validations ---
+
+export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "CANCELLED";
+
+export interface CreatePaymentInput {
+  papId: string;
+  projectId: string;
+  beneficiaryName: string;
+  beneficiaryId: string;
+  beneficiaryPhone?: string;
+  beneficiaryEmail?: string;
+  bankName: string;
+  accountNumber: string;
+  amount: number;
+  paymentCode?: string;
+  paidDate?: string;
+  notes?: string;
+}
+
+export interface UpdatePaymentInput {
+  status?: PaymentStatus;
+  paymentCode?: string;
+  paidDate?: string;
+  notes?: string;
+}
+
+const VALID_PAYMENT_STATUSES: PaymentStatus[] = ["PENDING", "PAID", "FAILED", "CANCELLED"];
+
+export function validateCreatePaymentInput(input: CreatePaymentInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!input.papId) {
+    errors.papId = "PAP is required";
+  }
+
+  if (!input.projectId) {
+    errors.projectId = "Project is required";
+  }
+
+  if (!input.beneficiaryName || input.beneficiaryName.trim().length < 2) {
+    errors.beneficiaryName = "Beneficiary name must be at least 2 characters";
+  }
+
+  if (!input.beneficiaryId || input.beneficiaryId.trim().length < 2) {
+    errors.beneficiaryId = "Beneficiary ID is required";
+  }
+
+  if (!input.bankName || input.bankName.trim().length < 2) {
+    errors.bankName = "Bank name must be at least 2 characters";
+  }
+
+  if (!input.accountNumber || input.accountNumber.trim().length < 2) {
+    errors.accountNumber = "Account number is required";
+  }
+
+  if (!input.amount || input.amount <= 0) {
+    errors.amount = "Amount must be greater than 0";
+  }
+
+  if (input.amount && input.amount > 100_000_000_000) {
+    errors.amount = "Amount seems too high";
+  }
+
+  if (input.beneficiaryEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.beneficiaryEmail)) {
+    errors.beneficiaryEmail = "Please enter a valid email address";
+  }
+
+  return errors;
+}
+
+export function validateUpdatePaymentInput(input: UpdatePaymentInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (input.status !== undefined && !VALID_PAYMENT_STATUSES.includes(input.status)) {
+    errors.status = "Invalid payment status";
+  }
+
+  if (input.paidDate !== undefined) {
+    const date = new Date(input.paidDate);
+    if (isNaN(date.getTime())) {
+      errors.paidDate = "Invalid date format";
+    }
+  }
+
+  if (input.notes !== undefined && input.notes.length > 2000) {
+    errors.notes = "Notes must be 2000 characters or less";
+  }
+
+  return errors;
+}
+
 export function validateCreateProjectInput(input: CreateProjectInput): Record<string, string> {
   const errors: Record<string, string> = {};
 

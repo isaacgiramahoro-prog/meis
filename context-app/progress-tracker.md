@@ -6,13 +6,13 @@ Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-- Phase 5 — Council Review & Approval Tracking — **Complete**
+- Phase 7 — Payment Tracking — **Complete**
 
 ---
 
 ## Current Goal
 
-- Implement Council Review module: council review tracking, signature approval tracking, council decision recording.
+- Implement Payment Tracking module: beneficiary payment information, payment status, payment tracking.
 
 ---
 
@@ -77,26 +77,42 @@ Update this file after every meaningful implementation change.
 - ✅ Approved reviews move PAP to FINANCE_PROCESSING status.
 - ✅ Verified Prisma generate and db push succeed.
 
+### Phase 6 — Complaint Management — ✅ Complete
+
+- ✅ Added ComplaintStatus enum (SUBMITTED, UNDER_REVIEW, RESOLVED, REJECTED) to Prisma schema.
+- ✅ Added ComplaintCategory enum (LAND_ISSUE, VALUATION_ISSUE, OWNERSHIP_ISSUE, PAYMENT_ISSUE, OTHER) to Prisma schema.
+- ✅ Added Complaint model with relations to Pap, Project, User (resolvedBy), and self-relation for appeals.
+- ✅ Created GET/POST /api/complaints route (list with search/status filters & create complaint).
+- ✅ Created GET/PATCH/DELETE /api/complaints/[id] route (detail, status update, resolution, delete).
+- ✅ Added complaint validation interfaces and functions (validateCreateComplaintInput, validateUpdateComplaintInput) to lib/validations.ts.
+- ✅ Created CreateComplaintModal component for filing new complaints and appeals.
+- ✅ Created UpdateComplaintStatusModal component for status changes (submit → review → resolve/reject).
+- ✅ Created Complaint list page with stats cards (Total, Submitted, Under Review, Resolved, Rejected), search bar, status filter, and table.
+- ✅ Created Complaint detail page with PAP info, status timeline, resolution details, parent complaint linking, and appeals list.
+- ✅ Added Complaints navigation link in Sidebar with MessageSquare icon (all roles read, Admin/Editor write).
+- ✅ Appeal workflow implemented — resolved complaints allow filing linked appeal complaints.
+- ✅ Verified Prisma generate and db push succeed.
+
+### Phase 7 — Payment Tracking — ✅ Complete
+
+- ✅ Added PaymentStatus enum (PENDING, PAID, FAILED, CANCELLED) to Prisma schema.
+- ✅ Added Payment model with relations to Pap, Project, and User (recordedBy).
+- ✅ Payment model includes: beneficiary snapshot, bank details, amount, payment code, status, notes, dates.
+- ✅ Created GET/POST /api/payments route (list with search/status/project/pap filters & create with stats).
+- ✅ Created GET/PATCH/DELETE /api/payments/[id] route (detail, status update with compensation sync, delete).
+- ✅ Added payment validation interfaces and functions (validateCreatePaymentInput, validateUpdatePaymentInput) to lib/validations.ts.
+- ✅ CreatePaymentModal component — beneficiary info, bank details, amount, payment code, date, notes.
+- ✅ UpdatePaymentStatusModal component — status transitions with payment code, date, notes fields.
+- ✅ Payment list page with 5 stats cards (Total, Pending, Paid, Failed, Cancelled), search, status filter, and table.
+- ✅ Payment detail page with amount/status/code/date stats cards, payment info, approval signature visualization, PAP info.
+- ✅ Invariant #1 enforced: Payment creation requires Owner, Cell, and Sector signatures completed.
+- ✅ Payment status update (PAID/FAILED/CANCELLED) syncs with PAP compensation status.
+- ✅ Sidebar navigation link added with DollarSign icon, visible to all roles.
+- ✅ Prisma generate and db push verified.
+
 ---
 
 ## Next Up
-
-### Phase 5 — Council Review & Approvals
-
-- Council review tracking.
-- Signature approval tracking (Owner, Cell, Sector).
-
-### Phase 6 — Complaint Management
-
-- Complaint creation and management.
-- Appeal workflow.
-- Complaint status tracking.
-
-### Phase 7 — Payment Tracking
-
-- Payment information recording.
-- Payment status tracking.
-- Payment progress dashboard.
 
 ### Phase 8 — Audit & Reporting
 

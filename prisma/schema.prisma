@@ -43,6 +43,28 @@ enum CouncilDecision {
   REVISION_NEEDED
 }
 
+enum ComplaintStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum ComplaintCategory {
+  LAND_ISSUE
+  VALUATION_ISSUE
+  OWNERSHIP_ISSUE
+  PAYMENT_ISSUE
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -55,6 +77,8 @@ model User {
   createdProjects   Project[]        @relation("CreatedProjects")
   assignedProjects  Project[]        @relation("AssignedProjects")
   recordedReviews   CouncilReview[]
+  resolvedComplaints Complaint[]     @relation("ResolvedComplaints")
+  recordedPayments  Payment[]        @relation("RecordedPayments")
 }
 
 model Project {
@@ -75,6 +99,8 @@ model Project {
   assignedEditor   User?         @relation("AssignedProjects", fields: [assignedEditorId], references: [id])
 
   paps Pap[]
+  complaints Complaint[]
+  payments Payment[]
 }
 
 model Pap {
@@ -138,6 +164,12 @@ model Pap {
   // Council Reviews
   councilReviews CouncilReview[]
 
+  // Complaints
+  complaints Complaint[]
+
+  // Payments
+  payments Payment[]
+
   // Payment Info (basic, full in payments module)
   bankName           String?
   accountNumber      String?
@@ -165,5 +197,68 @@ model CouncilReview {
   // Who recorded this review
   recordedById String
   recordedBy   User   @relation(fields: [recordedById], references: [id])
+}
+
+model Complaint {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  papId     String
+  pap       Pap      @relation(fields: [papId], references: [id])
+
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  // Complaint Information
+  category    ComplaintCategory
+  description String
+  status      ComplaintStatus @default(SUBMITTED)
+  resolution  String?
+
+  // Resolution tracking
+  resolvedAt   DateTime?
+  resolvedById String?
+  resolvedBy   User?    @relation("ResolvedComplaints", fields: [resolvedById], references: [id])
+
+  // Appeal linking (self-relation)
+  parentComplaintId String?
+  parentComplaint   Complaint? @relation("AppealChain", fields: [parentComplaintId], references: [id])
+  childComplaints   Complaint[] @relation("AppealChain")
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  papId     String
+  pap       Pap      @relation(fields: [papId], references: [id])
+
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  // Beneficiary Information (snapshot at time of payment)
+  beneficiaryName    String
+  beneficiaryId      String
+  beneficiaryPhone   String?
+  beneficiaryEmail   String?
+
+  // Bank & Payment Information
+  bankName           String
+  accountNumber      String
+  amount             Float
+  paymentCode        String?
+  paidDate           DateTime?
+  notes              String?
+
+  // Status
+  status             PaymentStatus @default(PENDING)
+
+  // Who recorded this payment
+  recordedById String
+  recordedBy   User   @relation("RecordedPayments", fields: [recordedById], references: [id])
 }
 

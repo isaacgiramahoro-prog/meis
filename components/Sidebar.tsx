@@ -12,6 +12,8 @@ import {
   FileText,
   BarChart3,
   Scale,
+  MessageSquare,
+  DollarSign,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -43,6 +45,18 @@ const navigationItems = [
     href: "/council",
     icon: Scale,
     roles: ["ADMIN", "EDITOR"],
+  },
+  {
+    label: "Complaints",
+    href: "/complaints",
+    icon: MessageSquare,
+    roles: ["ADMIN", "EDITOR", "VIEWER"],
+  },
+  {
+    label: "Payments",
+    href: "/payments",
+    icon: DollarSign,
+    roles: ["ADMIN", "EDITOR", "VIEWER"],
   },
   {
     label: "Users",
