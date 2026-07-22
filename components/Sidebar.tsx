@@ -78,10 +78,14 @@ const navigationItems = [
   },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const filteredNav = navigationItems.filter((item) =>
@@ -163,7 +167,7 @@ export default function Sidebar() {
 
         {/* Collapse toggle (desktop) */}
         <button
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={onToggle}
           className="hidden lg:flex items-center justify-center h-10 mx-3 mb-2 rounded-lg text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >

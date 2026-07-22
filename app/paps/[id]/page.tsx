@@ -159,6 +159,30 @@ export default function PapDetailPage() {
     fetchPap();
   }, [fetchPap]);
 
+  // --- Approve a signature ---
+  const handleApprove = async (field: string, dateField: string) => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(`/api/paps/${papId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        [field]: true,
+        [dateField]: new Date().toISOString(),
+      }),
+    });
+    const result = await res.json();
+    if (!result.success) {
+      const errorMsg = result.errors
+        ? Object.values(result.errors).join(", ")
+        : result.message;
+      throw new Error(errorMsg);
+    }
+    await fetchPap();
+  };
+
   // --- Update Valuation ---
   const handleUpdateValuation = async (data: {
     compensationAmount?: number | null;
@@ -473,7 +497,7 @@ export default function PapDetailPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Owner Signed */}
-            <div className={`p-4 rounded-lg border ${pap.ownerSigned ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
+            <div className={`p-4 rounded-lg border flex flex-col ${pap.ownerSigned ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
               <div className="flex items-center gap-2 mb-2">
                 {pap.ownerSigned ? (
                   <CheckCircle2 className="w-5 h-5 text-[#16A34A]" />
@@ -482,13 +506,28 @@ export default function PapDetailPage() {
                 )}
                 <span className="font-medium text-sm text-[#0F172A]">Owner Signed</span>
               </div>
-              <p className="text-xs text-[#64748B]">
+              <p className="text-xs text-[#64748B] mb-3">
                 {pap.ownerSignedDate ? formatDate(pap.ownerSignedDate) : "Not signed"}
               </p>
+              {role !== "VIEWER" && !pap.ownerSigned && (
+                <button
+                  onClick={() => handleApprove("ownerSigned", "ownerSignedDate")}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] transition-colors mt-auto"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Approve as Owner
+                </button>
+              )}
+              {pap.ownerSigned && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A] mt-auto">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Approved
+                </span>
+              )}
             </div>
 
             {/* Cell Signed */}
-            <div className={`p-4 rounded-lg border ${pap.cellSigned ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
+            <div className={`p-4 rounded-lg border flex flex-col ${pap.cellSigned ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
               <div className="flex items-center gap-2 mb-2">
                 {pap.cellSigned ? (
                   <CheckCircle2 className="w-5 h-5 text-[#16A34A]" />
@@ -497,13 +536,28 @@ export default function PapDetailPage() {
                 )}
                 <span className="font-medium text-sm text-[#0F172A]">Cell Signed</span>
               </div>
-              <p className="text-xs text-[#64748B]">
+              <p className="text-xs text-[#64748B] mb-3">
                 {pap.cellSignedDate ? formatDate(pap.cellSignedDate) : "Not signed"}
               </p>
+              {role !== "VIEWER" && !pap.cellSigned && (
+                <button
+                  onClick={() => handleApprove("cellSigned", "cellSignedDate")}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] transition-colors mt-auto"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Approve as Cell
+                </button>
+              )}
+              {pap.cellSigned && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A] mt-auto">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Approved
+                </span>
+              )}
             </div>
 
             {/* Sector Signed */}
-            <div className={`p-4 rounded-lg border ${pap.sectorSigned ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
+            <div className={`p-4 rounded-lg border flex flex-col ${pap.sectorSigned ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
               <div className="flex items-center gap-2 mb-2">
                 {pap.sectorSigned ? (
                   <CheckCircle2 className="w-5 h-5 text-[#16A34A]" />
@@ -512,9 +566,24 @@ export default function PapDetailPage() {
                 )}
                 <span className="font-medium text-sm text-[#0F172A]">Sector Signed</span>
               </div>
-              <p className="text-xs text-[#64748B]">
+              <p className="text-xs text-[#64748B] mb-3">
                 {pap.sectorSignedDate ? formatDate(pap.sectorSignedDate) : "Not signed"}
               </p>
+              {role !== "VIEWER" && !pap.sectorSigned && (
+                <button
+                  onClick={() => handleApprove("sectorSigned", "sectorSignedDate")}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] transition-colors mt-auto"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Approve as Sector
+                </button>
+              )}
+              {pap.sectorSigned && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A] mt-auto">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Approved
+                </span>
+              )}
             </div>
           </div>
         </CardContent>
@@ -531,7 +600,7 @@ export default function PapDetailPage() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Land Verified */}
-            <div className="space-y-1">
+            <div className={`p-4 rounded-lg border flex flex-col items-start gap-2 ${pap.landVerified ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
               <div className="flex items-center gap-2">
                 {pap.landVerified ? (
                   <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
@@ -540,15 +609,30 @@ export default function PapDetailPage() {
                 )}
                 <span className="text-sm font-medium text-[#0F172A]">Land Verified</span>
               </div>
-              <p className="text-xs text-[#64748B] pl-6">
+              <p className="text-xs text-[#64748B]">
                 {pap.landVerified
                   ? `By ${pap.landVerifiedBy || "Unknown"} on ${formatDate(pap.landVerifiedDate)}`
                   : "Not verified"}
               </p>
+              {role !== "VIEWER" && !pap.landVerified && (
+                <button
+                  onClick={() => handleApprove("landVerified", "landVerifiedDate")}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] transition-colors mt-1"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verify Land
+                </button>
+              )}
+              {pap.landVerified && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A]">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verified
+                </span>
+              )}
             </div>
 
             {/* Land Title Verified */}
-            <div className="space-y-1">
+            <div className={`p-4 rounded-lg border flex flex-col items-start gap-2 ${pap.landTitleVerified ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
               <div className="flex items-center gap-2">
                 {pap.landTitleVerified ? (
                   <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
@@ -557,15 +641,30 @@ export default function PapDetailPage() {
                 )}
                 <span className="text-sm font-medium text-[#0F172A]">Land Title Verified</span>
               </div>
-              <p className="text-xs text-[#64748B] pl-6">
+              <p className="text-xs text-[#64748B]">
                 {pap.landTitleVerified
                   ? `By ${pap.landTitleVerifiedBy || "Unknown"} on ${formatDate(pap.landTitleVerifiedDate)}`
                   : "Not verified"}
               </p>
+              {role !== "VIEWER" && !pap.landTitleVerified && (
+                <button
+                  onClick={() => handleApprove("landTitleVerified", "landTitleVerifiedDate")}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] transition-colors mt-1"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verify Title
+                </button>
+              )}
+              {pap.landTitleVerified && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A]">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verified
+                </span>
+              )}
             </div>
 
             {/* ID Verified */}
-            <div className="space-y-1">
+            <div className={`p-4 rounded-lg border flex flex-col items-start gap-2 ${pap.idVerified ? "bg-[#F0FDF4] border-[#BBF7D0]" : "bg-[#FEF9C3] border-[#FDE68A]"}`}>
               <div className="flex items-center gap-2">
                 {pap.idVerified ? (
                   <CheckCircle2 className="w-4 h-4 text-[#16A34A]" />
@@ -574,11 +673,26 @@ export default function PapDetailPage() {
                 )}
                 <span className="text-sm font-medium text-[#0F172A]">ID Verified</span>
               </div>
-              <p className="text-xs text-[#64748B] pl-6">
+              <p className="text-xs text-[#64748B]">
                 {pap.idVerified
                   ? `By ${pap.idVerifiedBy || "Unknown"} on ${formatDate(pap.idVerifiedDate)}`
                   : "Not verified"}
               </p>
+              {role !== "VIEWER" && !pap.idVerified && (
+                <button
+                  onClick={() => handleApprove("idVerified", "idVerifiedDate")}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-[#1E3A8A] text-white rounded-md hover:bg-[#1D4ED8] transition-colors mt-1"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verify ID
+                </button>
+              )}
+              {pap.idVerified && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A]">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Verified
+                </span>
+              )}
             </div>
           </div>
         </CardContent>

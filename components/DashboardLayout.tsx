@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import Sidebar from "./Sidebar";
 import { cn } from "@/lib/utils";
 
@@ -9,13 +9,18 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      <Sidebar />
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
       <main
         className={cn(
           "transition-all duration-300",
-          "lg:ml-[260px]",
+          sidebarCollapsed ? "lg:ml-[72px]" : "lg:ml-[260px]",
           "min-h-screen"
         )}
       >
