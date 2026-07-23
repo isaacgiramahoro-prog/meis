@@ -110,11 +110,24 @@ Update this file after every meaningful implementation change.
 - ✅ Sidebar navigation link added with DollarSign icon, visible to all roles.
 - ✅ Prisma generate and db push verified.
 
+### Phase 8 — Finance Review & Approval Tracking — ✅ Complete
+
+- ✅ Added FinanceDecision enum and FinanceReview model to Prisma schema.
+- ✅ Added finance review relations on Pap and User models.
+- ✅ Created GET/POST /api/finance route for finance queue listing and review creation.
+- ✅ Created GET/PATCH /api/finance/[id] route for finance review detail and update.
+- ✅ Added finance validation interfaces and helpers to lib/validations.ts.
+- ✅ Created RecordFinanceReviewModal for recording finance decisions.
+- ✅ Created Finance list page with stats cards, search, decision filter, and PAP table.
+- ✅ Created Finance detail page with PAP info, review notes, and status summary.
+- ✅ Added Finance navigation link to Sidebar for Admin and Editor roles.
+- ✅ Finance review actions update PAP compensation status and amount based on decision.
+
 ---
 
 ## Next Up
 
-### Phase 8 — Audit & Reporting
+### Phase 9 — Audit & Reporting
 
 - Audit history recording.
 - Reports module.

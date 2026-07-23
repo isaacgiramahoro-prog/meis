@@ -518,6 +518,83 @@ export function validateUpdatePaymentInput(input: UpdatePaymentInput): Record<st
   return errors;
 }
 
+// --- Finance Review Validations ---
+
+export type FinanceDecision = "PENDING" | "APPROVED" | "DECLINED" | "REVISION_NEEDED";
+
+export interface CreateFinanceReviewInput {
+  papId: string;
+  projectId: string;
+  reviewerName: string;
+  reviewDate?: string;
+  decision: FinanceDecision;
+  feedback?: string;
+  approvedAmount?: number;
+}
+
+export interface UpdateFinanceReviewInput {
+  decision?: FinanceDecision;
+  feedback?: string;
+  approvedAmount?: number;
+}
+
+const VALID_FINANCE_DECISIONS: FinanceDecision[] = ["PENDING", "APPROVED", "DECLINED", "REVISION_NEEDED"];
+
+export function validateCreateFinanceReviewInput(input: CreateFinanceReviewInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!input.papId) {
+    errors.papId = "PAP is required";
+  }
+
+  if (!input.projectId) {
+    errors.projectId = "Project is required";
+  }
+
+  if (!input.reviewerName || input.reviewerName.trim().length < 2) {
+    errors.reviewerName = "Reviewer name must be at least 2 characters";
+  }
+
+  if (!input.decision || !VALID_FINANCE_DECISIONS.includes(input.decision)) {
+    errors.decision = "Please select a valid finance decision";
+  }
+
+  if (input.approvedAmount !== undefined && input.approvedAmount < 0) {
+    errors.approvedAmount = "Approved amount cannot be negative";
+  }
+
+  if (input.feedback !== undefined && input.feedback.length > 1000) {
+    errors.feedback = "Feedback must be 1000 characters or less";
+  }
+
+  if (input.reviewDate !== undefined) {
+    const date = new Date(input.reviewDate);
+    if (isNaN(date.getTime())) {
+      errors.reviewDate = "Invalid review date";
+    }
+  }
+
+  return errors;
+}
+
+export function validateUpdateFinanceReviewInput(input: UpdateFinanceReviewInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (input.decision !== undefined && !VALID_FINANCE_DECISIONS.includes(input.decision)) {
+    errors.decision = "Invalid finance decision";
+  }
+
+  if (input.approvedAmount !== undefined && input.approvedAmount < 0) {
+    errors.approvedAmount = "Approved amount cannot be negative";
+  }
+
+  if (input.feedback !== undefined && input.feedback.length > 1000) {
+    errors.feedback = "Feedback must be 1000 characters or less";
+  }
+
+  return errors;
+}
+
 // --- User Validations (Admin Management) ---
 
 export interface CreateUserInput {

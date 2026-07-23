@@ -53,6 +53,12 @@ const navigationItems = [
     roles: ["ADMIN", "EDITOR", "VIEWER"],
   },
   {
+    label: "Finance",
+    href: "/finance",
+    icon: DollarSign,
+    roles: ["ADMIN", "EDITOR"],
+  },
+  {
     label: "Payments",
     href: "/payments",
     icon: DollarSign,

@@ -58,6 +58,8 @@ src/
 │
 ├── payments/
 │
+├── finance/
+│
 ├── dashboard/
 │
 ├── audit/
@@ -79,6 +81,7 @@ src/
 | council/ | Council review information and approval tracking |
 | complaints/ | Complaint creation, status management, resolution, appeals |
 | payments/ | Beneficiary payment information, payment status, payment tracking |
+| finance/ | Finance review information and approval tracking |
 | dashboard/ | Aggregated project statistics, charts, reports |
 | audit/ | Activity logs, change history, accountability records |
 | shared/ | Common utilities, validation rules, constants, reusable services |

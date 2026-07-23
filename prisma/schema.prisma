@@ -65,6 +65,13 @@ enum PaymentStatus {
   CANCELLED
 }
 
+enum FinanceDecision {
+  PENDING
+  APPROVED
+  DECLINED
+  REVISION_NEEDED
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -77,6 +84,7 @@ model User {
   createdProjects   Project[]        @relation("CreatedProjects")
   assignedProjects  Project[]        @relation("AssignedProjects")
   recordedReviews   CouncilReview[]
+  recordedFinanceReviews FinanceReview[] @relation("RecordedFinanceReviews")
   resolvedComplaints Complaint[]     @relation("ResolvedComplaints")
   recordedPayments  Payment[]        @relation("RecordedPayments")
 }
@@ -101,6 +109,7 @@ model Project {
   paps Pap[]
   complaints Complaint[]
   payments Payment[]
+  financeReviews FinanceReview[]
 }
 
 model Pap {
@@ -163,6 +172,9 @@ model Pap {
 
   // Council Reviews
   councilReviews CouncilReview[]
+
+  // Finance Reviews
+  financeReviews FinanceReview[]
 
   // Complaints
   complaints Complaint[]
@@ -260,5 +272,29 @@ model Payment {
   // Who recorded this payment
   recordedById String
   recordedBy   User   @relation("RecordedPayments", fields: [recordedById], references: [id])
+}
+
+model FinanceReview {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  papId     String
+  pap       Pap      @relation(fields: [papId], references: [id])
+
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  // Review Information
+  reviewDate    DateTime        @default(now())
+  reviewerName  String
+  decision      FinanceDecision @default(PENDING)
+  feedback      String?
+  approvedAmount Float?
+
+  // Who recorded this review
+  recordedById String
+  recordedBy   User    @relation("RecordedFinanceReviews", fields: [recordedById], references: [id])
 }
 
