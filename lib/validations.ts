@@ -518,6 +518,68 @@ export function validateUpdatePaymentInput(input: UpdatePaymentInput): Record<st
   return errors;
 }
 
+// --- User Validations (Admin Management) ---
+
+export interface CreateUserInput {
+  name: string;
+  email: string;
+  password: string;
+  role: "ADMIN" | "EDITOR" | "VIEWER";
+}
+
+export interface UpdateUserInput {
+  name?: string;
+  email?: string;
+  password?: string;
+  role?: "ADMIN" | "EDITOR" | "VIEWER";
+}
+
+const VALID_ROLES: ("ADMIN" | "EDITOR" | "VIEWER")[] = ["ADMIN", "EDITOR", "VIEWER"];
+
+export function validateCreateUserInput(input: CreateUserInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!input.name || input.name.trim().length < 2) {
+    errors.name = "Name must be at least 2 characters";
+  }
+
+  if (!input.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+    errors.email = "Please enter a valid email address";
+  }
+
+  if (!input.password || input.password.length < 6) {
+    errors.password = "Password must be at least 6 characters";
+  }
+
+  if (!input.role || !VALID_ROLES.includes(input.role)) {
+    errors.role = "Please select a valid role";
+  }
+
+  return errors;
+}
+
+export function validateUpdateUserInput(input: UpdateUserInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (input.name !== undefined && input.name.trim().length < 2) {
+    errors.name = "Name must be at least 2 characters";
+  }
+
+  if (input.email !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.email)) {
+    errors.email = "Please enter a valid email address";
+  }
+
+  if (input.password !== undefined && input.password.length < 6) {
+    errors.password = "Password must be at least 6 characters";
+  }
+
+  if (input.role !== undefined && !VALID_ROLES.includes(input.role)) {
+    errors.role = "Please select a valid role";
+  }
+
+  return errors;
+}
+
 export function validateCreateProjectInput(input: CreateProjectInput): Record<string, string> {
   const errors: Record<string, string> = {};
 
