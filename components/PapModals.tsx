@@ -3,6 +3,11 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { X, Loader2 } from "lucide-react";
+import {
+  getSectorNames,
+  getCellsBySector,
+  getVillagesByCell,
+} from "@/lib/nyanza-data";
 
 // --- Types ---
 export interface PapFormData {
@@ -70,6 +75,10 @@ export function CreatePapModal({ isOpen, onClose, onSubmit, projects }: CreatePa
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
 
+  const sectorOptions = getSectorNames();
+  const [cellOptions, setCellOptions] = useState<string[]>([]);
+  const [villageOptions, setVillageOptions] = useState<string[]>([]);
+
   useEffect(() => {
     if (!isOpen) {
       setForm({
@@ -98,6 +107,8 @@ export function CreatePapModal({ isOpen, onClose, onSubmit, projects }: CreatePa
         bankName: "",
         accountNumber: "",
       });
+      setCellOptions([]);
+      setVillageOptions([]);
       setErrors({});
     }
   }, [isOpen]);
@@ -376,45 +387,72 @@ export function CreatePapModal({ isOpen, onClose, onSubmit, projects }: CreatePa
                   <label className="block text-sm font-medium text-[#0F172A] mb-1.5">
                     Sector <span className="text-[#DC2626]">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={form.sector}
-                    onChange={(e) => handleChange("sector", e.target.value)}
+                    onChange={(e) => {
+                      handleChange("sector", e.target.value);
+                      handleChange("cell", "");
+                      handleChange("village", "");
+                      setCellOptions(getCellsBySector(e.target.value));
+                      setVillageOptions([]);
+                    }}
                     className={`w-full px-3 py-2.5 text-sm border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all ${
                       errors.sector ? "border-[#DC2626]" : "border-[#CBD5E1]"
                     }`}
-                    placeholder="Sector name"
-                  />
+                  >
+                    <option value="">-- Select Sector --</option>
+                    {sectorOptions.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
                   {errors.sector && <p className="mt-1 text-xs text-[#DC2626]">{errors.sector}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#0F172A] mb-1.5">
                     Cell <span className="text-[#DC2626]">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={form.cell}
-                    onChange={(e) => handleChange("cell", e.target.value)}
+                    onChange={(e) => {
+                      handleChange("cell", e.target.value);
+                      handleChange("village", "");
+                      setVillageOptions(getVillagesByCell(form.sector, e.target.value));
+                    }}
+                    disabled={!form.sector}
                     className={`w-full px-3 py-2.5 text-sm border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all ${
                       errors.cell ? "border-[#DC2626]" : "border-[#CBD5E1]"
-                    }`}
-                    placeholder="Cell name"
-                  />
+                    } disabled:bg-[#F8FAFC] disabled:text-[#94A3B8] disabled:cursor-not-allowed`}
+                  >
+                    <option value="">-- Select Cell --</option>
+                    {cellOptions.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                   {errors.cell && <p className="mt-1 text-xs text-[#DC2626]">{errors.cell}</p>}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-[#0F172A] mb-1.5">
                     Village <span className="text-[#DC2626]">*</span>
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={form.village}
                     onChange={(e) => handleChange("village", e.target.value)}
+                    disabled={!form.cell}
                     className={`w-full px-3 py-2.5 text-sm border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB] focus:border-transparent transition-all ${
                       errors.village ? "border-[#DC2626]" : "border-[#CBD5E1]"
-                    }`}
-                    placeholder="Village name"
-                  />
+                    } disabled:bg-[#F8FAFC] disabled:text-[#94A3B8] disabled:cursor-not-allowed`}
+                  >
+                    <option value="">-- Select Village --</option>
+                    {villageOptions.map((v) => (
+                      <option key={v} value={v}>
+                        {v}
+                      </option>
+                    ))}
+                  </select>
                   {errors.village && <p className="mt-1 text-xs text-[#DC2626]">{errors.village}</p>}
                 </div>
                 <div>
