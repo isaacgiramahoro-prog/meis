@@ -57,7 +57,8 @@ interface DonutChartProps {
 }
 
 export function DonutChart({ title, data, size = 180 }: DonutChartProps) {
-  const total = data.reduce((sum, d) => sum + d.value, 0) || 1;
+  const rawTotal = data.reduce((sum, d) => sum + d.value, 0);
+  const total = rawTotal || 1; // Use 1 for calculations to avoid division by zero
   const radius = size / 2 - 10;
   const circumference = 2 * Math.PI * radius;
   let cumulativePercent = 0;
@@ -111,7 +112,7 @@ export function DonutChart({ title, data, size = 180 }: DonutChartProps) {
               fill="#0F172A"
               fontSize="24"
             >
-              {total}
+              {rawTotal}
             </text>
             <text
               x={size / 2}
